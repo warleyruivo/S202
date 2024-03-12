@@ -1,0 +1,48 @@
+import json
+from datetime import datetime
+
+class Pokedex:
+    def __init__(self, database: Database):
+        self.database = database
+
+    def getPokemonByName(self, name: str):
+        result = self.database.collection.find({"name": name})
+        self.write_a_json(result, f"GetPokemonByName: {name}")
+        return result
+
+    def getPokemonsByType(self, types: list):
+        result = self.database.collection.find({"type": {"$in": types}})
+        self.write_a_json(result, f"GetPokemonsByType: {types}")
+        return result
+
+    def getPokemonsWithEvolutions(self, types: list):
+        result = self.database.collection.find({"type": {"$in": types}, "next_evolution": {"$exists": True}})
+        self.write_a_json(result, f"GetPokemonsWithEvolutionsByType: {types}")
+        return result
+
+    def getByWeaknesses(self, weaknesses: list):
+        result = self.database.collection.find({"weaknesses": {"$all": weaknesses}})
+        self.write_a_json(result, f"GetPokemonsByWeaknesses: {weaknesses}")
+        return result
+
+    def getPokemonsWithSpecific(self, size: int):
+        result = self.database.collection.find({"weaknesses": {"$size": size}})
+        self.write_a_json(result, f"GetPokemonsWithSpecificWeaknessesCount: {size}")
+        return result
+
+    def write_a_json(self, data, message):
+        log_data = {
+            "timestamp": str(datetime.now()),
+            "message": message,
+            "data": data 
+        }
+        with open("log.json", "a") as log_file:
+            json.dump(log_data, log_file, indent=4)
+            log_file.write("\n")
+
+
+
+
+
+
+
